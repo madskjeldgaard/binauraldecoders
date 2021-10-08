@@ -1,0 +1,11 @@
+(
+  name: "BinauralDecoders",
+  summary: "Binaural decoders for high order ambisonics set up as persistent main fx",
+  version: "0.001",
+  schelp: "BinauralDecoders.schelp",
+  dependencies: ["PersistentMainFX", "atk-sc3"],
+  license: "GNU GPL v3.0",
+  copyright: "madskjeldgaard",
+  ext_dependency: nil,
+  url: "https://github.com/madskjeldgaard/binauraldecoders"
+)
