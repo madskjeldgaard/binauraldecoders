@@ -78,11 +78,13 @@ BinauralDecoderIEM : PersistentMainFX{
 
   *afterSynthInit{
     forkIfNeeded{
-      vstController = VSTPluginController.collect(synth);
-      Server.local.sync;
-      vstController.sceneRot.open("SceneRotator");
-      Server.local.sync;
-      vstController.binauralDec.open("BinauralDecoder");
+      if(\VSTPluginController.asClass.notNil,{
+        vstController = \VSTPluginController.asClass.collect(synth);
+        Server.local.sync;
+        vstController.sceneRot.open("SceneRotator");
+        Server.local.sync;
+        vstController.binauralDec.open("BinauralDecoder");
+      })
     }
   }
 
@@ -121,11 +123,13 @@ BinauralDecoderIEM : PersistentMainFX{
         Ambisonic reference radius: 3.25
         */
 
-        // This will be the SceneRotator
-        hoa = VSTPlugin.ar(hoa, order.asHoaOrder.size, id: \sceneRot, bypass: bypass);
+        if(\VSTPlugin.asClass.notNil,{
+          // This will be the SceneRotator
+          hoa = \VSTPlugin.asClass.ar(hoa, order.asHoaOrder.size, id: \sceneRot, bypass: bypass);
 
-        // This will be the BinauralDecoder
-        binaural = VSTPlugin.ar(hoa, order.asHoaOrder.size, id: \binauralDec, bypass: bypass);
+          // This will be the BinauralDecoder
+          binaural = \VSTPlugin.asClass.ar(hoa, order.asHoaOrder.size, id: \binauralDec, bypass: bypass);
+        });
 
         // Pad output with silence after the stereo channels
         binaural = binaural ++ Silent.ar().dup(numChans-2);
