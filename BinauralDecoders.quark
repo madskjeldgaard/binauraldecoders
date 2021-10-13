@@ -3,7 +3,7 @@
   summary: "Binaural decoders for high order ambisonics set up as persistent main fx",
   version: "0.001",
   schelp: "BinauralDecoders.schelp",
-  dependencies: ["PersistentMainFX", "atk-sc3"],
+  dependencies: ["https://github.com/madskjeldgaard/persistentmainfx", "atk-sc3"],
   license: "GNU GPL v3.0",
   copyright: "madskjeldgaard",
   ext_dependency: nil,
