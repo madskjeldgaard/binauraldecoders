@@ -55,8 +55,6 @@ BinauralDecoderCIPIC : PersistentMainFX{
   }
 }
 
-/*
-
 BinauralDecoderIEM : PersistentMainFX{
   classvar <order;
   classvar <vstController;
@@ -78,7 +76,7 @@ BinauralDecoderIEM : PersistentMainFX{
     vstController.binauralDec.editor();
   }
 
-  *prepareResources{
+  *afterSynthInit{
     forkIfNeeded{
       vstController = VSTPluginController.collect(synth);
       Server.local.sync;
@@ -90,23 +88,25 @@ BinauralDecoderIEM : PersistentMainFX{
 
   *synthFunc{
     ^{|bus, bypass=0|
+        var binaural;
 
         // HOA input
-        var sig = In.ar(bus, numChans);
+        var hoaIn = In.ar(bus, numChans);
+        var hoa = hoaIn.keep(order.asHoaOrder.size);
 
         // Format exchange from ATK's HOA-format to what IEM expects (ambix) with the binauralDecoder's expected radius.
         // (for source, see https://github.com/ambisonictoolkit/atk-sc3/issues/95)
         // exchange reference radius
-        sig = HoaNFCtrl.ar(
-          in: sig,
+        hoa = HoaNFCtrl.ar(
+          in: hoa,
           encRadius: AtkHoa.refRadius,
           decRadius: iemBinDecRefRadius,
           order: order
         );
 
         // exchange normalisation
-        sig = HoaDecodeMatrix.ar(
-          in: sig,
+        hoa = HoaDecodeMatrix.ar(
+          in: hoa,
           hoaMatrix: HoaMatrixDecoder.newFormat(\ambix, order)
         );
 
@@ -122,16 +122,15 @@ BinauralDecoderIEM : PersistentMainFX{
         */
 
         // This will be the SceneRotator
-        sig = VSTPlugin.ar(sig, numChans, id: \sceneRot, bypass: bypass);
+        hoa = VSTPlugin.ar(hoa, order.asHoaOrder.size, id: \sceneRot, bypass: bypass);
 
         // This will be the BinauralDecoder
-        sig = VSTPlugin.ar(sig, numChans, id: \binauralDec, bypass: bypass);
+        binaural = VSTPlugin.ar(hoa, order.asHoaOrder.size, id: \binauralDec, bypass: bypass);
 
         // Pad output with silence after the stereo channels
-        sig = sig ++ Silent.ar().dup(numChans-2);
+        binaural = binaural ++ Silent.ar().dup(numChans-2);
 
-        ReplaceOut.ar(bus, sig);
+        ReplaceOut.ar(bus, binaural);
       }
   }
 }
-*/
