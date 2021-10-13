@@ -1,0 +1,62 @@
+TITLE:: BinauralDecoderCIPIC
+summary:: Binaural decoder for high order ambisonics set up as persistent main fx
+categories:: Extensions
+related:: Classes/Quarks
+
+DESCRIPTION::
+Binaural stereo decoder for high order ambisonics using the Ambisonic toolkit (see LINK::Tutorials/ABCs-of-the-ATK::). Once initialized it will set up a "persistent" decoder at the main output of SuperCollider, allowing you to work with ambisonics without worrying about initializing a decoder at the place at the right time.
+
+This decoder expects a high order ambisonics signal and will decode it to binaural stereo.
+
+When the user hard stops SuperCollider using cmd-period or ctrl-period, the synth is respawned automatically.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: hoaOrder
+The order of the input high order ambisonics signal.
+
+ARGUMENT:: id
+Subject ID of HRTF model. See LINK::Classes/FoaDecoderKernel#*newCIPIC:: for more information.
+
+returns:: a BinauralDecoderCIPIC
+
+EXAMPLES::
+
+code::
+
+// Setup decoder
+(
+~order = ~order ? 3;
+BinauralDecoderCIPIC.new(
+	hoaOrder: ~order,
+	id: 21
+	);
+)
+
+// Inspect the node tree to see that it is in fact in action:
+s.plotTree
+
+// Play some high order ambisonics sound
+(
+// White Noise going round
+Ndef(\hoa_testorientation, {|amp=0.125, freq=100, rotFreq=1, ele=0|
+	// var sig = LFTri.ar(freq)*amp;
+	var sig = WhiteNoise.ar(amp);
+	var azi = LFSaw.kr(rotFreq, mul: pi);
+
+	sig = HoaEncodeDirection.ar(
+		sig,
+		azi,
+		ele,
+		AtkHoa.refRadius,
+		~order
+	);
+
+}).play
+)
+
+// Bypass the decoder to output raw ambisonics
+BinauralDecoderCIPIC.set(\bypass, 1);
+::
