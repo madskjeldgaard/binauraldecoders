@@ -1,5 +1,5 @@
 (
-  name: "dinauraldecoders",
+  name: "binauraldecoders",
   summary: "Binaural decoders for high order ambisonics set up as persistent main fx",
   version: "0.001",
   schelp: "BinauralDecoders.schelp",
