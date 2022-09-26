@@ -18,7 +18,8 @@ BinauralDecoderCIPIC : PersistentMainFX{
     ^{|out=0, yaw=0, pitch=0, roll=0, bypass=0|
 
         // HOA input
-        var hoaIn = In.ar(out, numChans);
+
+        var hoaIn = In.ar(out, order.asHoaOrder.size);
         var hoa = hoaIn.keep(order.asHoaOrder.size);
 
         // format exchange: HOA >> FOA
@@ -46,7 +47,7 @@ BinauralDecoderCIPIC : PersistentMainFX{
         stereo = FoaDecode.ar(in: foa,  decoder: binauralDecoder);
 
         // Pad output with silence after the stereo channels
-        stereo = stereo ++ Silent.ar().dup(numChans-2);
+        stereo = stereo ++ Silent.ar().dup(order.asHoaOrder.size-2);
 
         sig = Select.ar(which: bypass,  array: [stereo, hoaIn]);
 
@@ -93,7 +94,7 @@ BinauralDecoderIEM : PersistentMainFX{
         var binaural;
 
         // HOA input
-        var hoaIn = In.ar(bus, numChans);
+        var hoaIn = In.ar(bus, order.asHoaOrder.size);
         var hoa = hoaIn.keep(order.asHoaOrder.size);
 
         // Format exchange from ATK's HOA-format to what IEM expects (ambix) with the binauralDecoder's expected radius.
@@ -132,7 +133,7 @@ BinauralDecoderIEM : PersistentMainFX{
         });
 
         // Pad output with silence after the stereo channels
-        binaural = binaural ++ Silent.ar().dup(numChans-2);
+        binaural = binaural ++ Silent.ar().dup(order.asHoaOrder.size-2);
 
         ReplaceOut.ar(bus, binaural);
       }
